@@ -1,5 +1,5 @@
 # S-NAXS
-S-NAXS: Standardizer of Nucleic Acid X-ray Structures
+S-NAXS = **S**tandardizer of **N**ucleic **A**cid **X**-ray **S**tructures
 
 ## How to install
 
