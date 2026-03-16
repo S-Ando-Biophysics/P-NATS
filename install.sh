@@ -16,6 +16,3 @@ fi
 
 echo ""
 echo "Installation complete."
-echo "Run with:"
-echo ""
-echo "   S-NAXS <PDB_ID>"
