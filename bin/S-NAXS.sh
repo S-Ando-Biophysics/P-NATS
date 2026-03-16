@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VERSION_FILE="${SCRIPT_DIR}/../VERSION"
+
+if [[ -f "$VERSION_FILE" ]]; then
+    VERSION=$(cat "$VERSION_FILE")
+else
+    VERSION="unknown"
+fi
+
 MAX_ASSEMBLY=99
 WORKDIR_NAME="S-NAXS-Temp"
 
@@ -622,6 +631,10 @@ parse_args() {
     case "$arg" in
       -h|--help)
         show_help
+        exit 0
+        ;;
+      -v|--version)
+        echo "S-NAXS version ${VERSION}"
         exit 0
         ;;
       -d)
