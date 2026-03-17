@@ -427,8 +427,8 @@ run_d_mode() {
   find_pair "$standardized_pdb" | analyze >&2
   cleanup_d_mode_files
 
-  [[ -f bp_pair.par ]] || die "bp_pair.par was not generated for: $standardized_pdb"
-  mv bp_pair.par "${prefix}.par"
+  [[ -f bp_step.par ]] || die "bp_step.par was not generated for: $standardized_pdb"
+  mv bp_step.par "${prefix}.par"
 
   awk '
   {
