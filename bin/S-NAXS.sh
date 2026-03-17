@@ -99,6 +99,71 @@ cleanup_duplex_classification_files() {
     auxiliary.par bp_helical.par cf_7methods.par bp_step.par
 }
 
+normalize_nonalpha_chain_ids_in_pdb() {
+  local pdb="$1"
+  local tmp="${pdb}.tmp"
+
+  [[ -f "$pdb" ]] || die "The PDB file was not found: $pdb"
+
+  awk '
+    function next_unused_letter(   code, letter) {
+      for (code = 65; code <= 90; code++) {
+        letter = sprintf("%c", code)
+        if (!(letter in used_letters) && !(letter in newly_assigned_letters)) {
+          newly_assigned_letters[letter] = 1
+          return letter
+        }
+      }
+      return ""
+    }
+
+    FNR == NR {
+      if ($0 ~ /^(ATOM  |HETATM)/) {
+        c = substr($0, 22, 1)
+        if (c ~ /[A-Z]/) {
+          used_letters[c] = 1
+        } else if (c != " ") {
+          seen_nonalpha[c] = 1
+        }
+      }
+      next
+    }
+
+    BEGIN {
+      mapping_built = 0
+    }
+
+    NR != FNR && !mapping_built {
+      for (c in seen_nonalpha) {
+        assigned = next_unused_letter()
+        if (assigned == "") {
+          printf("[ERROR] No unused alphabetic chain ID is available for non-alphabetic chain ID \"%s\".\n", c) > "/dev/stderr"
+          exit 1
+        }
+        mapping[c] = assigned
+      }
+
+      for (c in mapping) {
+        printf("[INFO] Reassigning non-alphabetic chain ID \"%s\" to \"%s\".\n", c, mapping[c]) > "/dev/stderr"
+      }
+
+      mapping_built = 1
+    }
+
+    {
+      if ($0 ~ /^(ATOM  |HETATM)/) {
+        c = substr($0, 22, 1)
+        if (c in mapping) {
+          $0 = substr($0, 1, 21) mapping[c] substr($0, 23)
+        }
+      }
+      print
+    }
+  ' "$pdb" "$pdb" > "$tmp" || die "Failed while normalizing chain IDs in: $pdb"
+
+  mv "$tmp" "$pdb"
+}
+
 extract_chain_ids_from_pdb() {
   local pdb="$1"
   awk '
@@ -513,7 +578,7 @@ run_chain_workflow_from_pdb() {
     if [[ "$result" == "__USE_ORIGINAL_NA_PDB__" ]]; then
       cp "$na_pdb" "$standardized"
       cp "$standardized" "$outdir/"
-      log "Duplex form classification was undecidable for a DNA chain. Rebuild was skipped, and the final output is: $outdir/$na_pdb"
+      log "Duplex form classification was undecidable for a DNA chain. Rebuild was skipped, and the final output is: $outdir/$standardized"
       return
     fi
 
@@ -570,6 +635,8 @@ process_downloaded_assembly() {
   phenix.cif_as_pdb "$cif" force_pdb_format=True >/dev/null 2>&1 || die "Failed to convert CIF to PDB: $cif"
   [[ -f "$pdb" ]] || die "The PDB file was not generated: $pdb"
 
+  normalize_nonalpha_chain_ids_in_pdb "$pdb"
+
   run_chain_workflow_from_pdb "$pdb" "$prefix" "$outdir"
 }
 
@@ -585,6 +652,7 @@ process_local_pdb() {
   log "Running in local PDB mode with input: $input_name"
 
   cp "$input_abs" "./${prefix}.pdb"
+  normalize_nonalpha_chain_ids_in_pdb "${prefix}.pdb"
   run_chain_workflow_from_pdb "${prefix}.pdb" "$prefix" "$outdir"
 }
 
@@ -603,6 +671,8 @@ process_local_cif() {
   phenix.cif_as_pdb "${prefix}.cif" force_pdb_format=True >/dev/null 2>&1 || die "Failed to convert CIF to PDB: ${prefix}.cif"
 
   [[ -f "${prefix}.pdb" ]] || die "The PDB file was not generated: ${prefix}.pdb"
+
+  normalize_nonalpha_chain_ids_in_pdb "${prefix}.pdb"
 
   run_chain_workflow_from_pdb "${prefix}.pdb" "$prefix" "$outdir"
 }
