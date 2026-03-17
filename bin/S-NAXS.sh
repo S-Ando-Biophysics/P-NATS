@@ -473,7 +473,7 @@ run_chain_workflow_from_pdb() {
 
   [[ -f "$pdb" ]] || die "The input PDB file was not found: $pdb"
 
-  get_part -n "$pdb" "$na_pdb"
+  get_part -n -d "$pdb" "$na_pdb"
   [[ -f "$na_pdb" ]] || die "get_part failed for: $pdb"
 
   mapfile -t chains < <(split_na_chains "$na_pdb" "${prefix}-NA")
