@@ -17,7 +17,13 @@ Please run the following commands in order in your environment where `bash` can 
     bash install.sh
 
 ## Notes
-P-NATS uses the software "[3DNA](https://x3dna.org/)" and the Python library "[Gemmi](https://github.com/project-gemmi/gemmi)".
+P-NATS uses the software "3DNA" and the Python library "GEMMI".
+
+||3DNA|GEMMI|
+|:---|:---|:---|
+|Homepage|https://x3dna.org/|https://github.com/project-gemmi/gemmi|
+|Citation|https://doi.org/10.1038/nprot.2008.104|https://doi.org/10.21105/joss.04200|
+|License|CC-BY-NC-4.0 & Original citation-ware|MPL-2.0|
 
 
 ### 3DNA
