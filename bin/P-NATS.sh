@@ -644,20 +644,8 @@ main() {
 
     local asm=1
     while [[ -f "${PDB_ID}-${asm}.cif" ]]; do
-      log "Attempting to process assembly ${asm}..."
-
-      (
-        set -e
-        process_downloaded_assembly "$PDB_ID" "$asm" "$start_dir"
-      ) || {
-        echo "[WARNING] Assembly ${asm} failed, skipping to next." >&2
-      }
-
+      process_downloaded_assembly "$PDB_ID" "$asm" "$start_dir"
       ((asm++))
-
-      if [[ ! -f "${PDB_ID}-${asm}.cif" ]]; then
-        break
-      fi
     done
   else
     case "${INPUT_FILE##*.}" in
