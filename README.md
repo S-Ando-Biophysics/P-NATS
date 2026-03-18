@@ -5,7 +5,7 @@ P-NATS = <ins>**P**</ins>urifier of <ins>**N**</ins>ucleic <ins>**A**</ins>cid <
 Please run the following commands in order in your environment where `bash` can be executed.
 
     cd ~
-    git clone https://github.com/S-Ando-Biophysics/P-NATS
+    git clone https://github.com/S-Ando-Biophysics/P-NATS.git
     cd P-NATS
     bash install.sh
     source ~/.bashrc
