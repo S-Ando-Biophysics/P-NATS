@@ -8,6 +8,7 @@ Please run the following commands in order in your environment where `bash` can 
     git clone https://github.com/S-Ando-Biophysics/P-NATS
     cd P-NATS
     bash install.sh
+    source ~/.bashrc
 
 ## About P-NATS
 X-ray crystallographers encounter the phase problem when determining the three-dimensional structures of biological macromolecules. The phase problem arises because X-ray diffraction experiments measure only the intensities of diffracted X-rays, whereas the phase information required to reconstruct an electron density map is not directly observed. Without phase information, the electron density map, which reveals the positions of atoms in the crystal, cannot be calculated from the diffraction data.
