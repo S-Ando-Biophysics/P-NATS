@@ -3,7 +3,8 @@ set -euo pipefail
 
 VERSION="1.0"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 VENV_DIR="${SCRIPT_DIR}/venv"
 
 if [[ ! -f "${VENV_DIR}/bin/activate" ]]; then
