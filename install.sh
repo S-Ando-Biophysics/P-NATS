@@ -95,6 +95,7 @@ else
 fi
 
 echo ""
-echo "${PROJECT_NAME} ${VERSION} was installed successfully."
-echo ""
 echo "Executable: ${INSTALL_BIN_DIR}/${BIN_NAME}"
+echo ""
+echo "${PROJECT_NAME} ${VERSION} was installed successfully."
+
