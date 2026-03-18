@@ -4,14 +4,14 @@ set -euo pipefail
 VERSION="1.0"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VENV_DIR="${SCRIPT_DIR}/../venv"
+VENV_DIR="${SCRIPT_DIR}/venv"
 
-if [[ -f "${VENV_DIR}/bin/activate" ]]; then
-  source "${VENV_DIR}/bin/activate"
-else
+if [[ ! -f "${VENV_DIR}/bin/activate" ]]; then
   echo "[ERROR] Python virtual environment not found: ${VENV_DIR}" >&2
   exit 1
 fi
+
+source "${VENV_DIR}/bin/activate"
 
 MAX_ASSEMBLY=99
 WORKDIR_NAME="P-NATS-Temp"
