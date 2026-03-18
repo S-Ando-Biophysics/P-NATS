@@ -81,7 +81,7 @@ PY
 
 cleanup_x3dna() {
   rm -f \
-    *.out *.dat *.r3d *.scr \
+    *.out *.outs *.dat *.r3d *.scr \
     stacking.pdb hstacking.pdb bestpairs.pdb hel_regions.pdb \
     auxiliary.par bp_step.par cf_7methods.par
 }
