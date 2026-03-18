@@ -644,7 +644,9 @@ main() {
 
     local asm=1
     while [[ -f "${PDB_ID}-${asm}.cif" ]]; do
-      process_downloaded_assembly "$PDB_ID" "$asm" "$start_dir"
+      if ! ( process_downloaded_assembly "$PDB_ID" "$asm" "$start_dir" ); then
+        echo "[WARNING] Assembly ${asm} failed. Skipping to next..." >&2
+      fi
       ((asm++))
     done
   else
