@@ -23,7 +23,7 @@ P-NATS uses the software "3DNA" and the Python library "GEMMI".
 |:---|:---|:---|
 |Homepage|https://x3dna.org/|https://github.com/project-gemmi/gemmi|
 |Citation|https://doi.org/10.1038/nprot.2008.104|https://doi.org/10.21105/joss.04200|
-|License|Original citation-ware|MPL-2.0|
+|License|Original citation-ware (the below described)|MPL-2.0|
 
 ### 3DNA
 If you do not have **3DNA**, please install it beforehand by following the instructions below.
