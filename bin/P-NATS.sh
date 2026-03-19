@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="1.1"
+VERSION="1.2"
 
 SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
@@ -249,6 +249,12 @@ normalize_initial_pdb() {
   }
 
   mv "$tmp" "$pdb"
+}
+
+pdb_has_atom_records() {
+  local pdb="$1"
+  [[ -f "$pdb" ]] || return 1
+  grep -Eq '^(ATOM  |HETATM)' "$pdb"
 }
 
 extract_chain_ids_from_pdb() {
@@ -518,6 +524,11 @@ run_chain_workflow_from_pdb() {
     return 1
   }
 
+  pdb_has_atom_records "$na_pdb" || {
+    echo "[ERROR] get_part generated no nucleic-acid atoms for: $pdb" >&2
+    return 1
+  }
+
   mapfile -t chains < <(split_na_chains "$na_pdb" "${prefix}-NA") || return 1
 
   if [[ ${#chains[@]} -eq 0 ]]; then
@@ -631,6 +642,44 @@ download_all_assemblies() {
   done
 }
 
+download_asymmetric_unit() {
+  local id="$1"
+  local outfile="${id}-asym.cif"
+  local url="https://files.rcsb.org/download/${id}.cif"
+
+  log "Downloading asymmetric unit: ${url}"
+
+  curl -fL --silent --show-error -o "$outfile" "$url" || {
+    echo "[ERROR] Failed to download asymmetric unit CIF for: $id" >&2
+    return 1
+  }
+
+  [[ -f "$outfile" ]] || {
+    echo "[ERROR] Asymmetric unit CIF was not created: $outfile" >&2
+    return 1
+  }
+}
+
+process_downloaded_asymmetric_unit_as_assembly1() {
+  local id="$1"
+  local outdir="$2"
+
+  local cif="${id}-asym.cif"
+  local pdb="${id}-asym.pdb"
+  local prefix="${id}-1"
+
+  log "Processing asymmetric unit as assembly 1"
+
+  [[ -f "$cif" ]] || {
+    echo "[ERROR] The asymmetric unit CIF file was not found: $cif" >&2
+    return 1
+  }
+
+  convert_cif_to_pdb "$cif" "$pdb" || return 1
+  normalize_initial_pdb "$pdb" || return 1
+  run_chain_workflow_from_pdb "$pdb" "$prefix" "$outdir" || return 1
+}
+
 parse_args() {
   MODE=""
   PDB_ID=""
@@ -712,6 +761,7 @@ main() {
     local target_cif
     local success_assemblies=()
     local failed_assemblies=()
+    local asym_fallback_done=0
 
     while true; do
       target_cif="${PDB_ID}-${asm}.cif"
@@ -737,8 +787,28 @@ main() {
       ((asm++))
     done
 
+    if [[ ${#success_assemblies[@]} -eq 0 ]]; then
+      warn "All assemblies failed. Trying the asymmetric unit from RCSB and processing it as assembly 1."
+
+      if (
+        set -e
+        download_asymmetric_unit "$PDB_ID"
+        process_downloaded_asymmetric_unit_as_assembly1 "$PDB_ID" "$start_dir"
+      ); then
+        asym_fallback_done=1
+        success_assemblies=("1")
+        log "Asymmetric unit was processed successfully as assembly 1."
+      else
+        warn "Fallback to asymmetric unit also failed."
+      fi
+    fi
+
     if [[ ${#success_assemblies[@]} -gt 0 ]]; then
-      log "Successfully processed assemblies: ${success_assemblies[*]}"
+      if [[ "$asym_fallback_done" -eq 1 ]]; then
+        log "Successfully processed structure via asymmetric-unit fallback as assembly 1."
+      else
+        log "Successfully processed assemblies: ${success_assemblies[*]}"
+      fi
     else
       warn "No assemblies were processed successfully."
     fi
