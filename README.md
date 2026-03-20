@@ -15,7 +15,7 @@ Before performing molecular replacement, it is often desirable to prepare a refi
 P-NATS has already been applied to all nucleic acid structures deposited in the PDB, and the processed models are compiled in the **P-NATS Database**. This database is automatically updated in accordance with updates to the PDB, ensuring that the latest structures are always available. Users are encouraged to make use of this resource as well.　Please access the following URL: https://s-ando-biophysics.github.io/P-NATS-DB.
 
 ## How to install
-Please run the following commands in order in your environment where `bash` can be executed.
+Please run the following commands in order in your environment.
 
     cd ~
     git clone https://github.com/S-Ando-Biophysics/P-NATS.git
