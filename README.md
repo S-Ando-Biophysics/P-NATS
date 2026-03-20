@@ -25,11 +25,11 @@ Please run the following commands in order in your environment.
 ## Dependencies
 P-NATS uses the software "3DNA" and the Python library "GEMMI".
 
-||3DNA|GEMMI|
+||GEMMI|3DNA|
 |:---|:---|:---|
-|Homepage|https://x3dna.org/|https://github.com/project-gemmi/gemmi|
-|Citation|https://doi.org/10.1038/nprot.2008.104|https://doi.org/10.21105/joss.04200|
-|License|Original citation-ware (the below described)|MPL-2.0|
+|Homepage|https://github.com/project-gemmi/gemmi|https://x3dna.org/|
+|Citation|https://doi.org/10.21105/joss.04200|https://doi.org/10.1038/nprot.2008.104|
+|License|MPL-2.0|Original citation-ware (the below described)|
 
 ### 3DNA
 If you do not have **3DNA**, please install it beforehand by following the instructions below.
